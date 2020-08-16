@@ -53,12 +53,60 @@ print(b$vectors)
 
 
 
+#### determinant of matrix ####
+det(m)
+
+
+#### trace of matrix ####
+sum(diag(m)) # sum of diagonal values
+
 #### matrix metadata #### 
 dim(m)
 nrow(m)
 ncol(m)
 
-#### seminar 1 excerise ####
+#### seminar 1 exercise ####
 
 A  = matrix(c(2,-1,0,-1,2,-1,0,-1,2), nrow = 3, ncol = 3, byrow = TRUE)
 print(A)
+
+inv_A = solve(A)
+print('inverse of A: ')
+print(inv_A)
+
+
+print('verify inverse of A: A %*% inv_A should euqal I') 
+A_I = A %*% inv_A
+
+print(A_I)
+print(round(A_I,2))
+
+A_I == diag(nrow = 3, ncol = 3)
+
+
+library(car)
+inv(A)
+
+# eignvalues of A 
+
+B = eigen(A)
+print(B)
+
+lamb = B$values
+v  = B$vectors
+
+#specral decomposition here  https://rdrr.io/r/base/eigen.html
+# A * v = lambda * v
+# A = lambda * V * V(-1)
+round(v %*% diag(lamb) %*% solve(v),2)
+round(v %*% diag(lamb) %*% t(v),2)
+A
+# determinant of A definition 2A.24 pg 131
+
+A_det = det(A)
+A_transpose_det = det(round(t(A)))
+print(paste0("determinats of A and A_transpose: ", A_det, ", ", A_transpose_det))
+
+
+# trace of A 
+sum(diag(A))
