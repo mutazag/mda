@@ -83,10 +83,6 @@ print(round(A_I,2))
 
 A_I == diag(nrow = 3, ncol = 3)
 
-
-library(car)
-inv(A)
-
 # eignvalues of A 
 
 B = eigen(A)
@@ -94,14 +90,51 @@ print(B)
 
 lamb = B$values
 v  = B$vectors
-
+diag(lamb) ## must make lambda a diagonal matrix
 #specral decomposition here  https://rdrr.io/r/base/eigen.html
 # A * v = lambda * v
 # A = lambda * V * V(-1)
 round(v %*% diag(lamb) %*% solve(v),2)
 round(v %*% diag(lamb) %*% t(v),2)
 A
-# determinant of A definition 2A.24 pg 131
+
+# v inverse and v transpose
+inv_v = round(solve(v),2)
+traspose_v = round(t(v),2)
+
+print('invers V')
+print(inv_v)
+print('transpose v')
+print(traspose_v)
+
+print('inv v == transpose v ??')
+print(inv_v == traspose_v)
+
+
+print(inv_v %*% traspose_v)
+
+print('v * vT = I')
+print( round(v %*% inv_v, 2))
+
+print('vT * v = I')
+print( round(traspose_v %*% v, 2))
+
+
+print('V * lambd(inv) * VT')
+round(v %*% solve(diag(lamb)) %*% inv_v,2)
+print('inv of A')
+print(solve(A))
+print('inv of A == v lamb(inv) * VT')
+
+
+## matrx square root 
+## v * sqrt(lamb) * vT 
+
+v %*% diag(sqrt(lamb)) %*% t(v)
+
+A
+
+#### determinant of A definition 2A.24 pg 131 ####
 
 A_det = det(A)
 A_transpose_det = det(round(t(A)))
