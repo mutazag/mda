@@ -45,3 +45,4 @@ round(z[97:103, 97:103],2)
 persp(x[1:100],y[1:100],z[1:100,1:100], box=TRUE)
 
 contour(x,y,z, xlim=c(-1,3), ylim=c(0,4))
+
