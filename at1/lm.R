@@ -22,82 +22,121 @@
 
 library(tidyverse)
 library(GGally)
+library(Amelia)
+library(corrplot)
+library(MVN)
+
+
+
 df <- read.table(file='https://archive.ics.uci.edu/ml/machine-learning-databases/00291/airfoil_self_noise.dat', sep ='\t')
 colnames(df) <- c('freq', 'angle', 'chord_length', 'free_stream_velocity', 'suc_disp_thick', 'sound_db')
 head(df)
 
 # https://www.researchgate.net/publication/282988800_Airfoil_Self_Noise_Prediction_Using_Linear_Regression_Approach
 
+# check for missing values in variables
+missmap(df)
+
+#dimensions
+dim(df)
 
 df %>% 
-  ggpairs()
+  ggpairs(
+    lower = list(continuous = ggally_density, combo = ggally_box_no_facet),
+  ) # showing univariate distributions, univariate correlations
+
+
+
+# inspecting the correlation in the inputs 
+variablesCorr <-  cor(df)
+corrplot(variablesCorr,method = "number", diag = FALSE)
+round(variablesCorr,2)
+
+# highest correlation between angle and suc_disp_thick
+
+
 
 
 # test for normality 
 
-par(mfrow = c(3,2))
+par(mfrow = c(2,3))
 for (i in 1:ncol(df)){ 
   print(i)
   qqnorm(df[,i], sub=colnames(df)[i])
 }
 
-# univariate normality test
-ks_test_before =apply(df, 2, function(x) ks.test(scale(x), y=pnorm))
+ks_test_before =apply(df, 2, function(x) ks.test(df, y=pnorm))
+ks_test_before
+mvn(df, mvnTest = "royston")
 
-df %>% ggplot(aes(x=log(freq))) + geom_density()
-mean(log(df$freq))
 
-df_normal <- df
-df_normal$freq_log <- log(df$freq)
-df_normal$angle_log <- log(df$angle)
-df_normal$chord_length_log <- log(df$chord_length)
-df_normal$free_stream_velocity_log <- log(df$free_stream_velocity)
-df_normal$suc_disp_thick_log <- log(df$suc_disp_thick)
-df_normal$sound_db_log <- log(df$sound_db)
-
-df_normal %>% select(ends_with("_log")) %>% 
-  ggpairs()
-
-df_subset <- df_normal %>% select(ends_with("_log"))
-ks_test_after =apply(df_subset, 2, function(x) ks.test(x, y=pnorm))
-par(mfrow = c(3,2))
-for (i in 1:ncol(df)){ 
-  print(i)
-  qqnorm(df[,i], sub=colnames(df_subset)[i])
-}
-
-# multivariate normality test 
-
-library(MVN)
-mvtest_before <- mvn(df, mvnTest = "royston", univariatePlot = TRUE, multivariatePlot = TRUE)
-mvtest_before
-mvtest_after <- mvn(df_subset, mvnTest = "royston")
-mvtest_after
-mvn(normal, mvnTest = "royston")
 
 library(car)
 trans <- powerTransform(df$freq)
 df$freq_bc <- bcPower(df$freq,trans$lambda )
-mvtest_bc <- mvn(df[c("sound_db","freq_bc")], mvnTest = "royston")
-mvtest_bc
-par(mfrow = c(1,2))
-for (i in 1:ncol(df[c("sound_db","freq_bc")])){ 
-  print(i)
-  qqnorm(df[c("freq","freq_bc")][,i], sub=colnames(df[c("freq","freq_bc")])[i])
+df$suc_disp_thick_bc <- bcPower(df$suc_disp_thick,powerTransform(df$suc_disp_thick)$lambda )
+df$free_stream_velocity <- bcPower(df$free_stream_velocity,powerTransform(df$free_stream_velocity)$lambda )
+
+
+# mvtest_bc <- mvn(df[c("sound_db","freq_bc")], mvnTest = "royston")
+# mvtest_bc
+# par(mfrow = c(1,2))
+# for (i in 1:ncol(df[c("sound_db","freq_bc")])){ 
+#   print(i)
+#   qqnorm(df[c("freq","freq_bc")][,i], sub=colnames(df[c("freq","freq_bc")])[i])
+# }
+# mvn(df[c("freq_bc", "freq","sound_db")])
+
+
+
+plotFit <- function(fit1,subTitle="Simple Regression"){ 
+  layout(matrix(c(1,1,2,3),2,2,byrow=T))
+  #Spend x Residuals Plot
+  plot(fit1$resid~df$sound_db[order(df$sound_db)],
+       main=paste0("Sound db Residuals\n ", subTitle),
+       xlab="Sound dB", ylab="Residuals")
+  abline(h=0,lty=2)
+  #Histogram of Residuals
+  hist(fit1$resid, main="Histogram of Residuals", breaks = 50,
+       ylab="Residuals")
+  #Q-Q Plot
+  qqnorm(fit1$resid)
+  qqline(fit1$resid)
 }
 
+fitandPlot <- function(df, formula = sound_db ~ ., subTitle="Simple Regression" ){
+  xfit <- lm(formula = formula , data=df)
+  print(summary(xfit))
+  plotFit(xfit, subTitle = subTitle)
+}
 
-# split data
-simple.fit <- lm(sound_db ~ freq + angle + chord_length + free_stream_velocity + suc_disp_thick, data=df)
+# simple fit
+simple.fit <- lm(sound_db ~ . , data=df)
 summary(simple.fit)
 plot(simple.fit)
+plotFit(simple.fit)
+
+freq.fit <- lm(sound_db ~ freq , data=df)
+summary(freq.fit)
+plot(freq.fit)
+plotFit(freq.fit)
+
+
+fitandPlot(df)
+fitandPlot(df, sound_db ~ freq)
+fitandPlot(df, sound_db ~ angle)
+fitandPlot(df, sound_db ~ chord_length)
+fitandPlot(df, sound_db ~ free_stream_velocity)
+fitandPlot(df, sound_db ~ suc_disp_thick)
+
+fitandPlot(df, sound_db ~ freq + chord_length + free_stream_velocity + suc_disp_thick + angle)
 
 
 layout(matrix(c(1,1,2,3),2,2,byrow=T))
 #Spend x Residuals Plot
 plot(simple.fit$resid~df$sound_db[order(df$sound_db)],
-     main="Spend x Residuals\nfor Simple Regression",
-     xlab="Sound dB Spend", ylab="Residuals")
+     main="Sound db Residuals\nfor Simple Regression",
+     xlab="Sound dB", ylab="Residuals")
 abline(h=0,lty=2)
 #Histogram of Residuals
 hist(simple.fit$resid, main="Histogram of Residuals",
@@ -115,5 +154,5 @@ lmtest::coefci(simple.fit)
 # http://www.learnbymarketing.com/tutorials/linear-regression-in-r/#:~:text=S%20ummary%3A%20R%20linear%20regression%20uses%20the%20lm,out%20the%20%24resid%20variable%20from%20your%20new%20model.
 
 
-# R example on same daaset
+# R example on same dataset
 #http://srisai85.github.io/airfoil_noise/Airfoil_Noise_Prediction.html
