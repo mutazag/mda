@@ -1,6 +1,6 @@
 # Week 5 In class exercises
 
-notes_data<-read.csv("C:/Documents/Notes.csv")
+notes_data<-read.csv("seminar5/Notes.csv")
 
 library(biotools)
 boxM(notes_data[,1:6],notes_data[,7])
@@ -33,7 +33,7 @@ for(i in 1:p){
 
 #MANOVA
 
-car_data <- read.csv("C:/Documents/car.csv")
+car_data <- read.csv("seminar5/car.csv")
 
 MakeModel,Price,mpg,rep78,rep77,hroom,rseat,trunk,weight,length,turn,displa,gratio	Origin
 car_mod<-manova(cbind(MakeModel,Price,mpg,rep78,rep77,hroom,rseat,trunk,weight,length,turn,displa,gratio)~Origin,data=car_data)
