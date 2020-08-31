@@ -131,6 +131,6 @@ fitandPlot(df, sound_db ~ chord_length)
 fitandPlot(df, sound_db ~ free_stream_velocity)
 fitandPlot(df, sound_db ~ suc_disp_thick)
 
-fitandPlot(df, sound_db ~ freq + chord_length + free_stream_velocity + suc_disp_thick + angle)
+fitandPlot(df, sound_db ~ freq_bc + chord_length + free_stream_velocity + suc_disp_thick + angle)
 
 
