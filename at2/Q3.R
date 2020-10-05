@@ -36,6 +36,33 @@ scatterplotMatrix(df_sample[,1:2])
 scatterplotMatrix(df_sample[,c(1,3)])
 scatterplotMatrix(df_sample[,c(2,3)])
 
+colnames(df_sample) <- c('x1','x2','x3')
+library(GGally)
+  ggpairs(as.data.frame(df_sample), 
+    lower = list(continuous = ggally_density, combo = ggally_box_no_facet),
+  ) # showing univariate distributions, univariate correlations
+
+  
+  # Classic Bivariate Normal Diagram
+  library(ellipse)
+  rho <- cor(df_sample[,1:2])
+  y_on_x <- lm(df_sample[,2] ~ df_sample[,1])    # Regressiion Y ~ X
+  x_on_y <- lm(df_sample[,1] ~ df_sample[,2])    # Regression X ~ Y
+  plot_legend <- c("99% CI green", "95% CI red","90% CI blue",
+                   "Y on X black", "X on Y brown")
+  
+  plot(df_sample[,1:2], xlab = "X", ylab = "Y",
+       col = "dark blue",
+       main = "Bivariate Normal with Confidence Intervals", xlim=c(-2,2), ylim=c(-2,2))
+  lines(ellipse(rho), col="red")       # ellipse() from ellipse package
+  lines(ellipse(rho, level = .05), col="green")
+  lines(ellipse(rho, level = .1), col="blue")
+  abline(y_on_x)
+  abline(x_on_y, col="brown")
+  legend(3,1,legend=plot_legend,cex = .5, bty = "n")
+  
+  
+
 library(MVN)
 roystonTest(df_sample,qqplot = TRUE)
 mvn(df_sample, mvnTest = 'royston')
