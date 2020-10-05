@@ -110,9 +110,17 @@ Y3 = df_sample[,3]
 solve(t(Y1) %*% Y1) %*% t(Y1) %*% Y2
 
 lm_r <- lm(Y2 ~ Y1)
+summary(lm_r)
+Z = cbind( rep(1,length(Y1)), Y1)
 
+# B = (Z' Z)(-1) Z' Y
 
+Z_t_Z <- t(Z) %*% Z
+inverse_method(Z_t_Z)
 
+B <-  inverse_method(Z_t_Z) %*% t(Z) %*% Y2
+B
+lm_r$coefficients
 
 
 # inverse method 
@@ -139,7 +147,7 @@ Y3 = BZ + e3
 Z = matrix (0, Y1, Y2)
 Beta = matrix (B1 and B2)
 
-Z = cbind(Y1, Y2)
+Z = cbind(rep(1,length(Y1)), Y1, Y2)
 
 # B = (Z' Z)(-1) Z' Y
 
@@ -147,7 +155,7 @@ Z_t_Z <- t(Z) %*% Z
 inverse_method(Z_t_Z)
 
 B <-  inverse_method(Z_t_Z) %*% t(Z) %*% Y3
-
+B
 
 lm_r_2 <- lm(Y3 ~ Y1+Y2)
 lm_r_2
@@ -160,25 +168,29 @@ scatterplot(Y_hat, e)
 plot(e~Y_hat)
 qqnorm(e)
 qqline(e)
-Y3 <- B[1] * Y1 + B[2] * Y2 + (Y3 - Y_hat)
+Y3_pred <- B[1] + B[2] * Y1 + B[3] * Y2 + (Y3 - Y_hat)
 
 
 
 
-# part h -- using result 7.12
+# part h -- using result 7.12 -- still not working
+# check example 7.11 in book and try to replicate 
 
 # B = inv (Sigma_Z_z) %*% small_sigma_Z_Y
 
 # Y3 = B1 Y1 + B2 Y2 + e3
 full_sigma <- (1/5630)*sigma1
 
+
 sigma_Z_Z <- as.matrix(full_sigma[1:2,1:2])
+sigma_Z_Z_inv <- inverse_method(full_sigma)[1:2,1:2]
 
 small_sigma_z_Y <- as.matrix(full_sigma[1:2,3])
 
-B <- inverse_method(sigma_Z_Z) %*% small_sigma_z_Y
+# B <- inverse_method(sigma_Z_Z) %*% small_sigma_z_Y
+B <- sigma_Z_Z_inv %*% small_sigma_z_Y
 B
-
+Bo <- mean(Y3) - t(B) %*% c(0,0)
 
 
 
