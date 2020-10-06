@@ -99,9 +99,9 @@ s2 <- as.numeric((t(e) %*% e)/(n-r-1))
 sqrt_var_Bi <- sqrt(diag(s2 * solve(t(Z) %*% (Z))))
 
 # F-distribution term - for simultaneos conf int
-F_dist_term <- sqrt((r+1)*qf(.05,(r+1), (n-r-1)))
+F_dist_term <- sqrt((r+1)*qf(.95,(r+1), (n-r-1)))
 # t-distribution term for one at a time conf int
-t_dist_term <- 1.96
+t_dist_term <- qt(.95, (n-r-1))
 
 print('simultaneos confidence intervals for Regression Coefficients (Beta)')
 for (i in 1:nrow(Beta)){
