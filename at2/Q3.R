@@ -183,15 +183,29 @@ full_sigma <- (1/5630)*sigma1
 
 
 sigma_Z_Z <- as.matrix(full_sigma[1:2,1:2])
-sigma_Z_Z_inv <- inverse_method(full_sigma)[1:2,1:2]
+sigma_Z_Z_inv <- inverse_method(sigma_Z_Z)
 
 small_sigma_z_Y <- as.matrix(full_sigma[1:2,3])
 
 # B <- inverse_method(sigma_Z_Z) %*% small_sigma_z_Y
 B <- sigma_Z_Z_inv %*% small_sigma_z_Y
 B
-Bo <- mean(Y3) - t(B) %*% c(0,0)
+Bo <- 0 - t(B) %*% c(0,0)
 
 
+# example 7.11
 
+siggg <- matrix(c(10,1,-1,1,7,3,-1,3,2), nrow=3)
+mu <- matrix(c(5,2,0), nrow=3)
+siggg
+mu
+#predict Y from Z1 and Z1
+siggg_ZZ <- siggg[2:3,2:3]
+siggg_ZZ
+siggg_ZY <- siggg[2:3,1]
+siggg_ZY
 
+B <- inverse_method(siggg_ZZ) %*% siggg_ZY
+B0 <- mu[1] - t(B) %*% mu[2:3]
+B0
+B
