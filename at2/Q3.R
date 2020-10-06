@@ -29,7 +29,11 @@ print(corr_matrix)
 library(mnormt)
 df_sample <- rmnorm(n=1000, mean = c(0,0,0), varcov = (1/5630)*sigma1)
 round(colMeans(df_sample))
+cov(df_sample)
 
+library(MASS)
+df_sample <- mvrnorm(n=1000000, mu=c(0,0,0), Sigma=(1/5630)*sigma1, empirical = TRUE)
+cov(df_sample)*5630
 library(car)
 scatterplotMatrix(df_sample)
 scatterplotMatrix(df_sample[,1:2])
@@ -118,7 +122,8 @@ Z = cbind( rep(1,length(Y1)), Y1)
 Z_t_Z <- t(Z) %*% Z
 inverse_method(Z_t_Z)
 
-B <-  inverse_method(Z_t_Z) %*% t(Z) %*% Y2
+# B <-  inverse_method(Z_t_Z) %*% t(Z) %*% Y2
+B <-  solve(Z_t_Z) %*% t(Z) %*% Y2
 B
 lm_r$coefficients
 
