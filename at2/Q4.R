@@ -80,5 +80,5 @@ round(cor(col_data), 2)
 summary(lm(col_data$y ~ col_data$x1 + col_data$x2 + col_data$x3))
 Z <- as.matrix(col_data[,2:4])
 Z_t_Z <- t(Z) %*% Z
-diag(inverse_method(Z_t_Z))
-B <-  inverse_method(Z_t_Z) %*% t(Z) %*% as.matrix(col_data$y)
+diag(solve(Z_t_Z))
+B <-  solve(Z_t_Z) %*% t(Z) %*% as.matrix(col_data$y)

@@ -25,14 +25,39 @@ corrplot::corrplot(
   diag = FALSE)
 
 #### part b ####
-
-Z <- as.matrix(master.diabetes[c('AGE', 'SEX', 'BMI', 'BP', 'S1', 'S2', 'S3', 'S4', 'S5')] )
+n <- dim(master.diabetes)[1]
+Z <- as.matrix(cbind(b0=rep(1, n), 
+           master.diabetes[c('AGE', 'SEX', 'BMI', 'BP', 'S1', 'S2', 'S3', 'S4', 'S5')] ))
 Y <- as.matrix(master.diabetes['Y'])
 Beta <- solve(t(Z) %*% Z) %*% t(Z) %*% Y
 round(Beta,4)
 
 # check with R lm() results
-summary(lm(Y ~ Z))
-
+X <- master.diabetes[c('AGE', 'SEX', 'BMI', 'BP', 'S1', 'S2', 'S3', 'S4', 'S5')]
+lm_fit <- summary(lm(Y ~ ., data= X ))
+round(lm_fit$coefficients,4)
 #### part c ####
 
+Y_hat <- Z %*% Beta
+e <- Y- Y_hat
+Y_mean <- mean(Y)
+
+R2 <- 1 - (sum(e^2) / sum( (Y - Y_mean)^2))
+R2          
+lm_fit$r.squared
+
+
+#### part d ####
+#calculate the number of model parameters - 1
+k<-9-1
+
+#calculate sum of squared residuals
+SSE<-sum(e**2)
+
+#calculate total observations in dataset
+n<-length(e)
+
+#calculate residual standard error
+RSE <- sqrt(SSE/(n-2))
+RSE
+sqrt(sum(lm_fit$residuals**2)/(n-2))
