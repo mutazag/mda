@@ -214,3 +214,22 @@ B <- inverse_method(siggg_ZZ) %*% siggg_ZY
 B0 <- mu[1] - t(B) %*% mu[2:3]
 B0
 B
+
+
+
+
+#### principal componetns
+
+pcs <- princomp(covmat = (1/5630)*sigma1, fix_sign = FALSE , scores = TRUE)
+summary(pcs, loadings = TRUE)
+round(E$vectors,3)
+screeplot(pcs)
+screeplot(pcs,type = 'lines' )
+biplot(pcs, xlabs=c('1','2','3'))
+pcs$scores
+pcs2 <- princomp(samples, fix_sign = FALSE)
+biplot(pcs2, choices = 2:3)
+biplot(pcs2, choices = c(1,3))
+biplot(pcs2)
+screeplot(pcs2, type='lines')
+pcs2$loadings
