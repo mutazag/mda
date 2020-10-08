@@ -40,6 +40,21 @@ samples[1:5, ]
 
 
 
+#### part d ####
+df <- mvrnorm(n=10000, mu=Mu, Sigma=Sigma1)
+
+library(GGally)
+ggpairs(
+  as.data.frame(df), 
+  lower= list(continuous = ggally_density, combo = ggally_box_no_facet)
+)
+
+library(car)
+scatter3d(x = df[,1], y=df[,2], z=df[,3], main='3d scatter plot of simulated data', 
+          xlab='Y1', ylab = 'Y2', zlab = 'Y3', 
+          theta = 30, phi = 30, expand = 0.5, col = "lightblue",
+          ltheta = 120, shade = 0.75,
+          box=TRUE)
 #### Part e ####
 Sigma1 <- (1/5630) * matrix(c(575, -60, 10, -60, 300, -50, 10, -50, 196), nrow=3)
 E <- eigen(Sigma1)
