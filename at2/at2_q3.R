@@ -46,8 +46,12 @@ df <- mvrnorm(n=10000, mu=Mu, Sigma=Sigma1)
 library(GGally)
 ggpairs(
   as.data.frame(df), 
-  lower= list(continuous = ggally_density, combo = ggally_box_no_facet)
-)
+  lower= list(continuous = ggally_density, combo = ggally_box_no_facet),
+  upper = list(continuous = wrap("points", alpha=.1, colour="#00abff") )
+  # mapping = aes(alpha=.7, fill= "#00abff")
+) 
+
+pairs(as.data.frame(df))
 
 library(car)
 scatter3d(x = df[,1], y=df[,2], z=df[,3], main='3d scatter plot of simulated data', 

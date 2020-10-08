@@ -11,6 +11,7 @@ mu <- colMeans(df[,1:2])
 
 
 #### part a ####
+library(car)
 scatterplotMatrix(df[,1:2],
                   ellipse = list(levels=c(.95), robust=TRUE, fill=FALSE, fill.alpha=0.2),
                   regLine  = FALSE, smooth = FALSE,
