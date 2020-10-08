@@ -1,5 +1,5 @@
 # AT 2 Question 3
-# Mutaz Abu Ghazaleh 
+# Mutaz Abu Ghazaleh
 # 13184383
 
 
@@ -45,17 +45,17 @@ df <- mvrnorm(n=10000, mu=Mu, Sigma=Sigma1)
 
 library(GGally)
 ggpairs(
-  as.data.frame(df), 
+  as.data.frame(df),
   lower= list(continuous = ggally_density, combo = ggally_box_no_facet),
   upper = list(continuous = wrap("points", alpha=.1, colour="#00abff") )
   # mapping = aes(alpha=.7, fill= "#00abff")
-) 
+)
 
 pairs(as.data.frame(df))
 
 library(car)
-scatter3d(x = df[,1], y=df[,2], z=df[,3], main='3d scatter plot of simulated data', 
-          xlab='Y1', ylab = 'Y2', zlab = 'Y3', 
+scatter3d(x = df[,1], y=df[,2], z=df[,3], main='3d scatter plot of simulated data',
+          xlab='Y1', ylab = 'Y2', zlab = 'Y3',
           theta = 30, phi = 30, expand = 0.5, col = "lightblue",
           ltheta = 120, shade = 0.75,
           box=TRUE)
@@ -82,21 +82,20 @@ e3
 
 
 #### part g ####
-
 cum_var_explained <- 0
 for (k in 1:3){
   var_pc <- E$values[k] / sum(E$values)
   cum_var_explained <- cum_var_explained + var_pc
-  
-  print(paste0('Variance explained by PC', k, 
+
+  print(paste0('Variance explained by PC', k,
                ': ', round(var_pc, 4), ', ',
-               'cumulative variance explained: ', 
+               'cumulative variance explained: ',
                round(cum_var_explained, 4)))
 }
 
 
 
-#### part h ####  
+#### part h ####
 # using a big sample to find the linear regressio Y2 = B1 Y1 + e1
 
 sigma_h <- matrix(c(575, -60, -60, 300), nrow=2) * (1/5630)
@@ -110,16 +109,16 @@ Beta <- solve(t(Z) %*% Z) %*% t(Z) %*% Y
 round(Beta,4)
 # [1,] -0.1063
 
-# using R lm() function 
+# using R lm() function
 
 coefficients(lm(Y~Z))['Z']
-# Z 
-# -0.1063087  
+# Z
+# -0.1063087
 
 
 
 
-#### part i ####  
+#### part i ####
 # using a big sample to find the linear regression Y3 = B1 Y1 + B2 Y2 + e3
 
 sigma_i <- (1/5630) * matrix(c(196,10,-50,10,575,-60,-50,-60,300), nrow=3)
@@ -134,8 +133,8 @@ round(Beta,4)
 # [1,]  0.0003
 # [2,] -0.1705
 
-# using R lm() function 
+# using R lm() function
 
 round(coefficients(lm(Y~Z))[c('Z1','Z2')],4)
-# Z1           Z2 
-# 0.0003 -0.1705 
+# Z1           Z2
+# 0.0003 -0.1705
