@@ -79,6 +79,7 @@ s2* (1 - sum(zz * Z))
 s2 * (1 - sum(zz **2))
 var(res1)
 var(res2)
+sigma_h[2,2]
 # mean(residuals**2)
 # Z %*% solve(t(Z) %*% Z) %*% t(Z)
 # var(residuals)
@@ -100,6 +101,10 @@ round(Beta,4)
 # using R lm() function
 
 round(coefficients(lm(Y~Z))[c('Z1','Z2')],4)
+lm_method2 <- lm(Y~Z)
+res2_2 <- residuals(lm_method2)
+var(res2_2)
+sigma_i[1,1]
 # Z1           Z2
 # 0.0003 -0.1705
 
