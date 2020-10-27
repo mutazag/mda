@@ -1,5 +1,5 @@
 
-
+library(MASS)
 #### Part a ####
 
 Sigma1 <- (1/5630) * matrix(c(575, -60, 10, -60, 300, -50, 10, -50, 196), nrow=3)
@@ -42,8 +42,11 @@ round(Beta,4)
 
 # using R lm() function
 
-coefficients(lm(Y~Z))['Z']
-res2 <- residuals(lm(Y~Z))
+lm_method <- lm(Y~Z)
+summary(lm_method)
+coefficients(lm_method)['Z']
+res2 <- residuals(lm_method)
+var(res2)
 # Z
 # -0.1063087
 
@@ -52,8 +55,8 @@ Y_hat <- Beta %*% Z
 res1 <- Y_hat - Y
 res1 <- res1[1,]
 
-hist(residuals)
-qqplot(residuals,Y_hat)
+hist(res1)
+qqplot(res1,Y_hat)
 
 ## JW pg 381 (7-17)
 # var(e) = s^2 (1 - h)
@@ -67,10 +70,11 @@ qqplot(residuals,Y_hat)
 Z * 1/(t(Z) %*% Z) -> zz
 # zz * Z is zz^2
 zz <- zz[,1]
-zz
+#zz
 1 - sum(zz **2)
 1 - sum(zz * Z)
 s2<- mean(res1**2)
+s2
 s2* (1 - sum(zz * Z))
 s2 * (1 - sum(zz **2))
 var(res1)
@@ -82,8 +86,8 @@ var(res2)
 # using a big sample to find the linear regression Y3 = B1 Y1 + B2 Y2 + e3
 
 sigma_i <- (1/5630) * matrix(c(196,10,-50,10,575,-60,-50,-60,300), nrow=3)
-sigma_i_inv <- solve(Sigma_i)
-samples <- mvrnorm(n=100000, mu=Mu, Sigma = sigma_i)
+sigma_i_inv <- solve(sigma_i)
+samples <- mvrnorm(n=100000, mu=c(0,0,0), Sigma = sigma_i)
 Z <- samples[,2:3]
 Y <- samples[,1]
 
@@ -98,3 +102,4 @@ round(Beta,4)
 round(coefficients(lm(Y~Z))[c('Z1','Z2')],4)
 # Z1           Z2
 # 0.0003 -0.1705
+
