@@ -1,7 +1,10 @@
 # At3 Part A Q3
 library(car)
 library(tidyverse)
-
+library(VGAM)
+library(dummies)
+library(rpart)
+library(nnet)
 # load and eda
 skull_data = read.csv('egyptskull.csv')
 head(skull_data)
@@ -69,6 +72,85 @@ print('accuracy')
 1 - aper
 
 
+#### multinomial logistc regression ####
+
+epoch <- skull_train$Epoch
+epoch_dummies <- dummy(epoch, sep="_" )
+skull_train <- cbind(skull_train, epoch_dummies)
+
+skulls_vglm <- vglm(cbind(epoch_150,epoch_200,epoch_1850,epoch_3300,epoch_4000) ~ MB+BH+BL+NH,data=skull_train, family = 'multinomial')
+skulls_vglm
+
+vglm_predictions <- predict(skulls_vglm, newdata=skull_test[,1:4], type='response')
+class_names <- colnames(vglm_predictions)
+
+
+skull_test$vglm_predict <- apply(vglm_predictions, 1, function(p) as.integer(strsplit(class_names[which.max(p)],'_')[[1]][2]))
+skull_vglm_confusion <- table(skull_test$Epoch,skull_test$vglm_predict)
+aggregate(skull_test$vglm_predict, by=list(skull_test$vglm_predict), FUN=length)
+confusionMatrix(skull_vglm_confusion)
+aper <- sum(skull_test$Epoch != skull_test$qda_predict) / length(skull_test$Epoch) 
+print('accuracy')
+1 - aper
+
+
+#### rpart -- recursive partitioning and regression trees ####
+skulls_rpart<-rpart(as.factor(Epoch) ~ MB+BH+BL+NH,data=skull_train, 
+                    method='class',
+                    control = rpart.control(minsplit = 10),
+                    model = TRUE)
+skulls_rpart
+skull_test$rpart_predict<-predict(skulls_rpart,skull_test[,1:4],type='class')
+skull_rpart_confusion <- table(skull_test$Epoch,skull_test$rpart_predict)
+skull_rpart_confusion
+aggregate(skull_test$rpart_predict, by=list(skull_test$rpart_predict), FUN=length)
+confusionMatrix(skull_rpart_confusion)
+aper <- sum(skull_test$Epoch != skull_test$rpart_predict) / length(skull_test$Epoch) 
+print('accuracy')
+1 - aper
+
+plot(skulls_rpart)
+text(skulls_rpart,use.n = TRUE, all=TRUE, cex=.7)
+plotcp(skulls_rpart)
+#prune()
+
+
+#### NNET ####
+skulls_nnet<-nnet(as.factor(Epoch) ~ MB+BH+BL+NH,data=skull_train, 
+                  size = 50, rang = 0.1,
+                  decay = 5e-4, maxit = 200)
+
+skulls_nnet
+skull_test$nnet_predict<-as.integer(predict(skulls_nnet,skull_test[,1:4],type='class'))
+skull_nnet_confusion <- table(skull_test$Epoch,skull_test$nnet_predict)
+skull_nnet_confusion
+aggregate(skull_test$nnet_predict, by=list(skull_test$nnet_predict), FUN=length)
+confusionMatrix(skull_nnet_confusion)
+aper <- sum(skull_test$Epoch != skull_test$rpart_predict) / length(skull_test$Epoch) 
+print('accuracy')
+1 - aper
+
+plot(skulls_rpart)
+text(skulls_rpart,use.n = TRUE, all=TRUE, cex=.7)
+plotcp(skulls_rpart)
+#prune()
+
+
+#### comparing confusion matricies and error ####
+print('accuracy and APER')  # actual error rate or actual error rate
+print('lda')
+confusionMatrix(skull_lda_confusion)$overall['Accuracy']
+1 - confusionMatrix(skull_lda_confusion)$overall[['Accuracy']]
+print('qda')
+confusionMatrix(skull_qda_confusion)$overall['Accuracy']
+1 - confusionMatrix(skull_qda_confusion)$overall[['Accuracy']]
+print('vglm')
+confusionMatrix(skull_vglm_confusion)$overall['Accuracy']
+1 - confusionMatrix(skull_vglm_confusion)$overall[['Accuracy']]
+
+print('rpart')
+confusionMatrix(skull_rpart_confusion)$overall['Accuracy']
+1 - confusionMatrix(skull_rpart_confusion)$overall[['Accuracy']]
 
 
 
