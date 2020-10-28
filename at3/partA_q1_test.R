@@ -1,6 +1,8 @@
+# AT 3 Part A Question 1
+# Mutaz Abu Ghazaleh
+# 13184383
 
 library(MASS)
-#### Part a ####
 
 Sigma1 <- (1/5630) * matrix(c(575, -60, 10, -60, 300, -50, 10, -50, 196), nrow=3)
 E <- eigen(Sigma1)
@@ -9,120 +11,105 @@ V <- E$vectors
 
 Sigma1_Inv <- round(V %*% Lambda %*% t(V))
 Sigma1_Inv
-# [,1] [,2] [,3]
-# [1,]   10    2    0
-# [2,]    2   20    5
-# [3,]    0    5   30
-
 round(Sigma1_Inv %*% Sigma1)
-# [,1] [,2] [,3]
-# [1,]    1    0    0
-# [2,]    0    1    0
-# [3,]    0    0    1
-
-
-#### Part e ####
 Sigma1 <- (1/5630) * matrix(c(575, -60, 10, -60, 300, -50, 10, -50, 196), nrow=3)
 
 
-#### part h ####
-# using a big sample to find the linear regressio Y2 = B2,1 Y1 + e1
+##### parts a, b, c #####
 
-sigma_h <- matrix(c(575, -60, -60, 300), nrow=2) * (1/5630)
-Mu <- c(0,0)
-sigma_h_inv <- solve(sigma_h)
-samples <- mvrnorm(n=100000, mu=Mu, Sigma = sigma_h)
-Z <- samples[,1]
-Y <- samples[,2]
-
-# using result 7.4 formula
-Beta <- solve(t(Z) %*% Z) %*% t(Z) %*% Y
-round(Beta,4)
-# [1,] -0.1063
-
-# using R lm() function
-
-lm_method <- lm(Y~Z)
-summary(lm_method)
-coefficients(lm_method)['Z']
-res2 <- residuals(lm_method)
-var(res2)
-# Z
-# -0.1063087
-
-Y_hat <- Beta %*% Z
-
-res1 <- Y_hat - Y
-res1 <- res1[1,]
-
-hist(res1)
-qqplot(res1,Y_hat)
-
-## JW pg 381 (7-17)
-# var(e) = s^2 (1 - h)
-# s^2 = residual mean square ((good enough estimate for residual variance))
-# the term (1-h) is likely to be almost 1 so it can be ignored 
-# term 1-h can be calcualted based on JW(7-16) 
-#  I - Z(tZ Z)^(-1) tZ
-# given Z is one variable only i can simply this as 
-#   1 - Z  1/(Z^2) * Z
-
-Z * 1/(t(Z) %*% Z) -> zz
-# zz * Z is zz^2
-zz <- zz[,1]
-#zz
-1 - sum(zz **2)
-1 - sum(zz * Z)
-s2<- mean(res1**2)
-s2
-s2* (1 - sum(zz * Z))
-s2 * (1 - sum(zz **2))
-var(res1)
-var(res2)
-sigma_h[2,2]
-# mean(residuals**2)
-# Z %*% solve(t(Z) %*% Z) %*% t(Z)
-# var(residuals)
-
-
-
-
-#### part i ####
-# using a big sample to find the linear regression Y3 = B3,1 Y1 + B3,2 Y2 + e3
-
-sigma_i <- (1/5630) * matrix(c(196,10,-50,10,575,-60,-50,-60,300), nrow=3)
-sigma_i_inv <- solve(sigma_i)
-samples <- mvrnorm(n=100000, mu=c(0,0,0), Sigma = sigma_i)
-Z <- samples[,2:3]
-Y <- samples[,1]
+# using a big sample to find the linear regression Y2 = B2,1 Y1 + e1
+sigma_2 <- matrix(c(575, -60, -60, 300), nrow=2) * (1/5630)
+Mu2 <- c(0,0)
+sigma_2_inv <- solve(sigma_2)
+samples2 <- mvrnorm(n=100000, mu=Mu2, Sigma = sigma_2)
+Z2 <- samples[,1]
+Y2 <- samples[,2]
 
 # using result 7.4 formula
-Beta <- solve(t(Z) %*% Z) %*% t(Z) %*% Y
-round(Beta,4)
-# [1,]  0.0003
-# [2,] -0.1705
+Beta2_1 <- solve(t(Z2) %*% Z2) %*% t(Z2) %*% Y2
+round(Beta2_1,4)
+# [1,] -0.1042
+Y2_hat <- Z2 %*% Beta2_1
+res2_1 <- Y2_hat - Y2
+res2_1 <- res2_1[,1]
+round(var(res2_1),4)
+hist(res2_1)
+qqplot(res2_1,Y2_hat)
 
 # using R lm() function
-
-round(coefficients(lm(Y~Z))[c('Z1','Z2')],4)
-lm_method2 <- lm(Y~Z)
+lm_method2 <- lm(Y2~Z2)
+summary(lm_method2)
+round(coefficients(lm_method2)['Z2'],4)
 res2_2 <- residuals(lm_method2)
-var(res2_2)
-sigma_i[1,1]
+round(var(res2_2),4)
+
+# linear regression Y3 = B3,1 Y1 + B3,2 Y2 + e3
+sigma_3 <- (1/5630) * matrix(c(196,10,-50,10,575,-60,-50,-60,300), nrow=3)
+sigma_3_inv <- solve(sigma_3)
+samples3 <- mvrnorm(n=100000, mu=c(0,0,0), Sigma = sigma_3)
+Z3 <- samples3[,2:3]
+Y3 <- samples3[,1]
+
+# using result 7.4 formula
+Beta3 <- solve(t(Z3) %*% Z3) %*% t(Z3) %*% Y3
+round(Beta3,4)
+# -0.002, -0.1687
+Y3_hat <- Z3 %*% Beta3
+res3_1 <- Y3_hat - Y3
+res3_1 <- res3_1[,1]
+round(var(res3_1),4)
+hist(res3_1)
+
+# using R lm() function
+round(coefficients(lm(Y3~Z3))[c('Z31','Z32')],4)
+lm_method3 <- lm(Y3~Z3)
+res3_2 <- residuals(lm_method3)
+round(var(res3_1),4)
+var(res3_2)
+sigma_3[1,1]
 # Z1           Z2
 # 0.0003 -0.1705
 
 
 
+# regression coefficients --- part a
+Beta2_1
+Beta3
+
+# residuals variance *** part b
+var(res2_1)
+var(res2_2)
+sigma_2[2,2]
 
 
-##### e 
+# residuals variance *** part c
+var(res3_1)
+var(res3_2)
+sigma_3[1,1]
 
-Sigma1 
+
+
+
+##### part d - T Matrix
+
+Sigma1
 T_mat <- matrix( c(1,0,0,
-                   .1013,1,0,
-                   .0016,.1645,1), byrow=TRUE, nrow=3)
-T_mat 
+                   .1042,1,0,
+                   .002,.1687,1), byrow=TRUE, nrow=3)
+T_mat
+
+
+#### part e ** for T Sigma T_transpose
 
 e_mat <- T_mat %*% Sigma1 %*% t(T_mat)
-e_mat * 5630
+round(e_mat,4)
+
+
+
+##### part F ** find S inverse
+
+S_inv <- round(t(T_mat) %*% diag(1/c(0.1021, 0.0533, 0.0337)) %*% T_mat,2)
+round(S_inv, 2)
+# S
+round(solve(S_inv) * 5630,2)
+
