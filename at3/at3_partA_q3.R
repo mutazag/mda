@@ -5,6 +5,7 @@ library(VGAM)
 library(dummies)
 library(rpart)
 library(nnet)
+library(caret)
 # load and eda
 skull_data = read.csv('egyptskull.csv')
 head(skull_data)
@@ -89,7 +90,7 @@ skull_test$vglm_predict <- apply(vglm_predictions, 1, function(p) as.integer(str
 skull_vglm_confusion <- table(skull_test$Epoch,skull_test$vglm_predict)
 aggregate(skull_test$vglm_predict, by=list(skull_test$vglm_predict), FUN=length)
 confusionMatrix(skull_vglm_confusion)
-aper <- sum(skull_test$Epoch != skull_test$qda_predict) / length(skull_test$Epoch) 
+aper <- sum(skull_test$Epoch != skull_test$vglm_predict) / length(skull_test$Epoch) 
 print('accuracy')
 1 - aper
 
@@ -126,13 +127,10 @@ skull_nnet_confusion <- table(skull_test$Epoch,skull_test$nnet_predict)
 skull_nnet_confusion
 aggregate(skull_test$nnet_predict, by=list(skull_test$nnet_predict), FUN=length)
 confusionMatrix(skull_nnet_confusion)
-aper <- sum(skull_test$Epoch != skull_test$rpart_predict) / length(skull_test$Epoch) 
+aper <- sum(skull_test$Epoch != skull_test$nnet_predict) / length(skull_test$Epoch) 
 print('accuracy')
 1 - aper
 
-plot(skulls_rpart)
-text(skulls_rpart,use.n = TRUE, all=TRUE, cex=.7)
-plotcp(skulls_rpart)
 #prune()
 
 

@@ -26,7 +26,7 @@ Sigma1 <- (1/5630) * matrix(c(575, -60, 10, -60, 300, -50, 10, -50, 196), nrow=3
 
 
 #### part h ####
-# using a big sample to find the linear regressio Y2 = B1 Y1 + e1
+# using a big sample to find the linear regressio Y2 = B2,1 Y1 + e1
 
 sigma_h <- matrix(c(575, -60, -60, 300), nrow=2) * (1/5630)
 Mu <- c(0,0)
@@ -83,8 +83,12 @@ sigma_h[2,2]
 # mean(residuals**2)
 # Z %*% solve(t(Z) %*% Z) %*% t(Z)
 # var(residuals)
+
+
+
+
 #### part i ####
-# using a big sample to find the linear regression Y3 = B1 Y1 + B2 Y2 + e3
+# using a big sample to find the linear regression Y3 = B3,1 Y1 + B3,2 Y2 + e3
 
 sigma_i <- (1/5630) * matrix(c(196,10,-50,10,575,-60,-50,-60,300), nrow=3)
 sigma_i_inv <- solve(sigma_i)
@@ -108,3 +112,17 @@ sigma_i[1,1]
 # Z1           Z2
 # 0.0003 -0.1705
 
+
+
+
+
+##### e 
+
+Sigma1 
+T_mat <- matrix( c(1,0,0,
+                   .1013,1,0,
+                   .0016,.1645,1), byrow=TRUE, nrow=3)
+T_mat 
+
+e_mat <- T_mat %*% Sigma1 %*% t(T_mat)
+e_mat * 5630

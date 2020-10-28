@@ -31,16 +31,17 @@ for (m in 1:p){
 print(pp)
 plot(matrix(pp), type='b')
 
-m = 3 # 87% cumulatie proportion of total sample variance explained 
-
+# m = 3 # 87% cumulatie proportion of total sample variance explained 
+m = 2
 Fs <- c() 
 Hs <- c()
 
 
 Fl_1 <- round(sqrt(Lambdas[1]) * V[,1], 2)
 Fl_2 <- round(sqrt(Lambdas[2]) * V[,2], 2)
-Fl_3 <- round(sqrt(Lambdas[3]) * V[,3], 2)
-Fs <- cbind(Fl_1, Fl_2, Fl_3)
+# Fl_3 <- round(sqrt(Lambdas[3]) * V[,3], 2)
+# Fs <- cbind(Fl_1, Fl_2, Fl_3)
+Fs <- cbind(Fl_1, Fl_2)
 
 rownames(Fs) <- colnames(stock.data)
 Hs <- apply(Fs, 1, function(r) sum(r**2))
@@ -53,8 +54,8 @@ Fs <- cbind(Fs, Epsilon)
 
 ## Estimate R
 Epsilon_mat <- diag(Epsilon)
-L = matrix(cbind(Fl_1, Fl_2, Fl_3), ncol=3)
-#L = matrix(cbind(Fl_1, Fl_2), ncol=2)
+# L = matrix(cbind(Fl_1, Fl_2, Fl_3), ncol=3)
+L = matrix(cbind(Fl_1, Fl_2), ncol=2)
 
 Est_R = round( L %*% t(L) + Epsilon_mat, 2 )
 Est_R
@@ -91,7 +92,7 @@ library(car)
 scatterpl
 
 
-fact2 <- psych::principal(stock.data, nfactors = 3, rotate = 'varimax')
+fact2 <- psych::principal(stock.data, nfactors = 2, rotate = 'varimax')
 fact2
 L_rotated
 Fs
