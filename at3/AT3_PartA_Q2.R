@@ -71,10 +71,10 @@ Fs
 
 # cumulativ propotion if total sample variance explained 
 prop_explained <- c()
-for (i in 1:m){
+for (i in 1:5){
   prop_explained<-append(prop_explained, sum(Lambdas[1:i])/p)
 }
-prop_explained
+round(prop_explained,2)
 
 
 
